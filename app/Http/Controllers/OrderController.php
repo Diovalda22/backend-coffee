@@ -19,7 +19,7 @@ class OrderController extends Controller
         return response()->json(['orders' => $orders]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, MidtransService $midtrans)
     {
         $user = Auth::user();
 
@@ -52,12 +52,19 @@ class OrderController extends Controller
                 ]);
             }
 
-            // Kosongkan keranjang setelah checkout
             Carts::where('user_id', $user->id)->delete();
+
+            // Create snap token
+            $snap = $midtrans->createTransaction($order);
 
             DB::commit();
 
-            return response()->json(['message' => 'Pesanan berhasil dibuat', 'order' => $order->load('details')]);
+            return response()->json([
+                'message' => 'Pesanan berhasil dibuat',
+                'order' => $order->load('details'),
+                'snap_token' => $snap->token,
+                'redirect_url' => $snap->redirect_url,
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Gagal membuat pesanan', 'error' => $e->getMessage()], 500);

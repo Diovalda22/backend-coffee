@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->integer('total_price');
             $table->enum('payment_status', ['pending', 'paid', 'processing', 'cancelled'])->default('pending');
             $table->string('payment_method')->nullable();
