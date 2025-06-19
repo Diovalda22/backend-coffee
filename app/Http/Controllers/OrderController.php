@@ -15,8 +15,15 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Orders::with('details.product')->where('user_id', Auth::id())->get();
-        return response()->json(['orders' => $orders]);
+        $orders = Orders::with(['details.product'])
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10); // Gunakan pagination
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
     }
 
     public function store(Request $request, MidtransService $midtrans)

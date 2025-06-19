@@ -43,6 +43,10 @@ class MidtransService
                 'email' => $order->user->email,
             ],
             'item_details' => $itemDetails,
+            'callbacks' => [
+                'finish' => 'https://midtrans-return.flutter-app.com',
+            ],
+
         ];
 
         return Snap::createTransaction($transaction);

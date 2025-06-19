@@ -123,7 +123,7 @@ class ProductController extends Controller
                 'description'   => $request->description ?? $product->description,
                 'price'         => $request->price ?? $product->price,
                 'stock'         => $request->stock ?? $product->stock,
-                'image_url'     => $imagePath,
+                'image_url'     => $imagePath ?? null,
             ]);
 
             return response()->json([
