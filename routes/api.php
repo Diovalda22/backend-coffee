@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\MidtransCallbackController;
 // use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/order', [OrderController::class, 'store']);
         Route::get('/order/{id}', [OrderController::class, 'show']);
         Route::get('/order/{id}/pay', [OrderController::class, 'pay']);
+
+        Route::get('/review/{product}', [ProductReviewController::class, 'index']);
+        Route::post('/review', [ProductReviewController::class, 'store']);
     });
 
     // Admin Routes

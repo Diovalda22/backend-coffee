@@ -13,21 +13,37 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Products::query()->whereNull('deleted_at');
+            $query = Products::query();
 
             if ($request->has('name')) {
                 $query->where('name', 'like', '%' . $request->name . '%');
             }
 
             if ($request->has('category')) {
-                $query->where('category', $request->category);
+                $query->where('product_category_id', $request->category);
             }
 
-            $products = $query->orderBy('created_at', 'desc')->get();
+            $products = $query->with('reviews')->orderBy('created_at', 'desc')->get();
+
+            // Tambahkan average_rating manual ke setiap produk
+            $data = $products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'image_url' => $product->image_url,
+                    'is_promoted' => $product->is_promoted,
+                    'product_category_id' => $product->product_category_id,
+                    'created_at' => $product->created_at,
+                    'average_rating' => round($product->reviews->avg('rating'), 1),
+                ];
+            });
 
             return response()->json([
                 'status' => 'success',
-                'data' => $products,
+                'data' => $data,
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -42,16 +58,40 @@ class ProductController extends Controller
     public function show(int $id)
     {
         try {
-            $product = Products::findOrFail($id);
+            $product = Products::with(['category', 'reviews.user'])->findOrFail($id);
+
+            $averageRating = round($product->reviews->avg('rating'), 1);
+            $reviewCount = $product->reviews->count();
 
             return response()->json([
                 'status' => 'success',
-                'data' => $product,
+                'data' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'stock' => $product->stock,
+                    'image_url' => $product->image_url,
+                    'is_promoted' => $product->is_promoted,
+                    'category' => $product->category->name ?? null,
+                    'average_rating' => $averageRating,
+                    'review_count' => $reviewCount,
+                    'reviews' => $product->reviews->map(function ($review) {
+                        return [
+                            'id' => $review->id,
+                            'user' => $review->user->name,
+                            'rating' => $review->rating,
+                            'review' => $review->review,
+                            'created_at' => $review->created_at->toDateTimeString(),
+                        ];
+                    }),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Produk tidak ditemukan.',
+                'error' => $e->getMessage(),
             ], 404);
         }
     }
