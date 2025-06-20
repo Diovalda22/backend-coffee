@@ -35,7 +35,7 @@ class MidtransService
 
         $transaction = [
             'transaction_details' => [
-                'order_id' => 'ORDER-' . $order->id . '-' . uniqid(),
+                'order_id' => 'ORDER-' . $order->id . '-' . substr(md5(uniqid()), 0, 6),
                 'gross_amount' => (int) $order->total_price,
             ],
             'customer_details' => [
