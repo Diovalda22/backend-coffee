@@ -65,12 +65,21 @@ class CartController extends Controller
         return response()->json(['message' => 'Jumlah diperbarui', 'cart' => $cart]);
     }
 
-    public function destroy($id)
+    public function destroyMultiple(Request $request)
     {
-        $cart = Carts::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        $cart->delete();
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:carts,id'
+        ]);
 
-        return response()->json(['message' => 'Produk dihapus dari keranjang']);
+        // Hapus hanya cart items milik user yang sedang login
+        Carts::whereIn('id', $request->ids)
+            ->where('user_id', Auth::id())
+            ->delete();
+
+        return response()->json([
+            'message' => count($request->ids) . ' item berhasil dihapus dari keranjang'
+        ]);
     }
 
     public function clear()

@@ -51,4 +51,25 @@ class MidtransService
 
         return Snap::createTransaction($transaction);
     }
+
+    public function createTransactionWithOrder($order)
+    {
+        $params = [
+            'transaction_details' => [
+                'order_id' => 'REPAY-' . $order->id . '-' . time(), // gunakan prefix berbeda untuk menghindari duplicate
+                'gross_amount' => $order->total_price,
+            ],
+            'customer_details' => [
+                'first_name' => $order->user->name,
+                'email' => $order->user->email,
+            ],
+            'callbacks' => [
+                'finish' => 'https://midtrans-return.flutter-app.com', // sesuaikan jika perlu
+            ],
+        ];
+
+        $snapUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+
+        return $snapUrl;
+    }
 }

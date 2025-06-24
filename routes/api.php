@@ -29,11 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // Produk
         Route::get('/product', [ProductController::class, 'index']);
         Route::get('/product/{id}', [ProductController::class, 'show']);
+
         // Keranjang
         Route::get('/cart', [CartController::class, 'index']);
         Route::post('/cart/add', [CartController::class, 'store']);
         Route::put('/cart/update/{id}', [CartController::class, 'update']);
-        Route::delete('/cart/remove/{id}', [CartController::class, 'destroy']);
+        Route::delete('/cart/delete-multiple', [CartController::class, 'destroyMultiple']);
         Route::delete('/cart/clear', [CartController::class, 'clear']);
 
         // Pemesanan
@@ -41,7 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/order', [OrderController::class, 'store']);
         Route::get('/order/{id}', [OrderController::class, 'show']);
         Route::get('/order/{id}/pay', [OrderController::class, 'pay']);
+        Route::post('/order/repay/{order}', [OrderController::class, 'repay']);
 
+        // Review Produk
         Route::get('/review/{product}', [ProductReviewController::class, 'index']);
         Route::post('/review', [ProductReviewController::class, 'store']);
     });

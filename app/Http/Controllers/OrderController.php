@@ -78,6 +78,16 @@ class OrderController extends Controller
         }
     }
 
+    public function repay(Orders $order, MidtransService $midtrans)
+    {
+        if ($order->payment_status !== 'pending') {
+            return response()->json(['message' => 'Pembayaran sudah dilakukan.'], 400);
+        }
+
+        $redirectUrl = $midtrans->createTransactionWithOrder($order);
+        return response()->json(['redirect_url' => $redirectUrl]);
+    }
+
     public function show($id)
     {
         $order = Orders::with('details.product')
@@ -90,24 +100,5 @@ class OrderController extends Controller
         }
 
         return response()->json(['order' => $order]);
-    }
-
-    public function pay($id, MidtransService $midtrans)
-    {
-        $order = Orders::with(['user', 'details.product'])
-            ->where('id', $id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-
-        $snap = $midtrans->createTransaction($order);
-        if (!$snap) {
-            return response()->json(['message' => 'Failed to create snap token'], 500);
-        }
-
-        return response()->json([
-            'message' => 'Snap token created',
-            'snap_token' => $snap->token,
-            'redirect_url' => $snap->redirect_url
-        ]);
     }
 }
