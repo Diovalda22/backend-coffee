@@ -180,6 +180,40 @@ class ProductController extends Controller
         }
     }
 
+    public function setPromoted(int $id)
+    {
+        try {
+            $product = Products::findOrFail($id);
+            if (!$product) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Produk tidak ditemukan.',
+                ], 404);
+            } elseif ($product->is_promoted === 0) {
+                $product->update(['is_promoted' => 1]);
+                return response()->json([
+                    'status'  => 'success',
+                    'message' => 'Status promosi produk berhasil diubah.',
+                    'is_promoted' => $product->is_promoted,
+                ]);
+            } else {
+                $product->update(['is_promoted' => 0]);
+                return response()->json([
+                    'status'  => 'success',
+                    'message' => 'Status promosi produk berhasil diubah.',
+                    'is_promoted' => $product->is_promoted,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal mengubah status promosi produk.',
+            ], 500);
+        }
+    }
+
     public function delete(int $id)
     {
         try {
