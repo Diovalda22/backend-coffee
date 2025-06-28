@@ -23,6 +23,10 @@ class ProductController extends Controller
                 $query->where('product_category_id', $request->category);
             }
 
+            if ($request->has('promoted') && in_array($request->promoted, [0, 1])) {
+                $query->where('is_promoted', $request->promoted);
+            }
+
             $products = $query->with('reviews')->orderBy('created_at', 'desc')->get();
 
             // Tambahkan average_rating manual ke setiap produk
