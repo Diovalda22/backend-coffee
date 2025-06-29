@@ -48,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Review Produk
         Route::get('/review/{product}', [ProductReviewController::class, 'index']);
         Route::post('/review', [ProductReviewController::class, 'store']);
+        Route::put('/review/{id}', [ProductReviewController::class, 'update']);
+        Route::delete('/review/{id}', [ProductReviewController::class, 'destroy']);
     });
 
     // Admin Routes
