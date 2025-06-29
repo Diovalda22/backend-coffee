@@ -48,16 +48,41 @@ class ProductReviewController extends Controller
                 'review' => 'nullable|string',
             ]);
 
-            $review = ProductReview::create([
-                'user_id' => Auth::id(),
-                ...$validated
-            ]);
+            $userId = Auth::id();
+            $productId = $validated['product_id'];
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Review submitted successfully',
-                'data' => $review
-            ], 201);
+            // Cek apakah user sudah memberi review untuk produk ini
+            $existingReview = ProductReview::where('user_id', $userId)
+                ->where('product_id', $productId)
+                ->first();
+
+            if ($existingReview) {
+                // Jika review sudah ada, update
+                $existingReview->update([
+                    'rating' => $validated['rating'],
+                    'review' => $validated['review'] ?? $existingReview->review,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Review updated successfully',
+                    'data' => $existingReview
+                ], 200);
+            } else {
+                // Jika belum ada, buat review baru
+                $review = ProductReview::create([
+                    'user_id' => $userId,
+                    'product_id' => $productId,
+                    'rating' => $validated['rating'],
+                    'review' => $validated['review'] ?? null,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Review submitted successfully',
+                    'data' => $review
+                ], 201);
+            }
         } catch (Exception $e) {
             Log::error('Failed to submit review: ' . $e->getMessage());
 

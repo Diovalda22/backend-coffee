@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\ProductController;
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Routes
     Route::middleware('check-role:2')->prefix('admin')->group(function () {
         // Kelola Produk 
+        Route::get('/stats', [DashboardController::class, 'stats']);
         Route::get('/product', [ProductController::class, 'index']);
         Route::get('/product/{id}', [ProductController::class, 'show']);
         Route::post('/product', [ProductController::class, 'store']);
