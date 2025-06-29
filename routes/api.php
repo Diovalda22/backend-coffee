@@ -54,8 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin Routes
     Route::middleware('check-role:2')->prefix('admin')->group(function () {
-        // Kelola Produk 
+        // Dashboard
         Route::get('/stats', [DashboardController::class, 'stats']);
+        Route::get('/latestOrder', [DashboardController::class, 'latestOrders']);
+        // Kelola Produk 
         Route::get('/product', [ProductController::class, 'index']);
         Route::get('/product/{id}', [ProductController::class, 'show']);
         Route::post('/product', [ProductController::class, 'store']);

@@ -30,4 +30,16 @@ class DashboardController extends Controller
             'monthly_income' => $monthlyIncome,
         ]);
     }
+
+    public function latestOrders()
+    {
+        $latestOrders = Orders::with(['user', 'details.product'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'latest_orders' => $latestOrders,
+        ]);
+    }
 }
