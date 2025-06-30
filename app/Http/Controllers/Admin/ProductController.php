@@ -123,12 +123,12 @@ class ProductController extends Controller
 
 
             $product = Products::create([
-                'category_id'   => $request->category_id,
-                'name'          => $request->name,
-                'description'   => $request->description,
-                'price'         => $request->price,
-                'stock'         => $request->stock,
-                'image_url'     => $imagePath,
+                'product_category_id'   => $request->category_id,
+                'name'                  => $request->name,
+                'description'           => $request->description,
+                'price'                 => $request->price,
+                'stock'                 => $request->stock,
+                'image_url'             => $imagePath,
             ]);
 
             return response()->json([
@@ -141,6 +141,7 @@ class ProductController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Gagal menambahkan produk.',
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
