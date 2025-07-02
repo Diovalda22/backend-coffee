@@ -39,7 +39,7 @@ class DashboardController extends Controller
             ->get();
 
         return response()->json([
-            'latest_orders' => $latestOrders,
+            'data' => $latestOrders,
         ]);
     }
 }
