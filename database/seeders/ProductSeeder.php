@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Products;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class ProductSeeder extends Seeder
 {
@@ -20,6 +20,10 @@ class ProductSeeder extends Seeder
                 'description' => 'Kopi hitam pekat tanpa gula',
                 'price' => 15000,
                 'image_url' => 'espresso.jpg',
+                'discount_type' => 1, // Nominal
+                'discount_amount' => 3000,
+                'discount_start' => Carbon::now()->subDays(1),
+                'discount_end' => Carbon::now()->addDays(7),
             ],
             [
                 'name' => 'Cappuccino',
@@ -27,6 +31,10 @@ class ProductSeeder extends Seeder
                 'description' => 'Espresso dengan susu dan busa lembut',
                 'price' => 20000,
                 'image_url' => 'cappuccino.jpg',
+                'discount_type' => 2, // Persentase
+                'discount_amount' => 10, // 10%
+                'discount_start' => Carbon::now(),
+                'discount_end' => Carbon::now()->addDays(5),
             ],
             [
                 'name' => 'Teh Tarik',
@@ -34,6 +42,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Teh manis dengan susu kental khas Malaysia',
                 'price' => 12000,
                 'image_url' => 'teh-tarik.jpg',
+                'discount_type' => 0, // Tidak ada diskon
             ],
             [
                 'name' => 'Matcha Latte',
@@ -41,6 +50,10 @@ class ProductSeeder extends Seeder
                 'description' => 'Teh hijau Jepang dengan susu',
                 'price' => 22000,
                 'image_url' => 'matcha-latte.jpg',
+                'discount_type' => 2,
+                'discount_amount' => 15,
+                'discount_start' => Carbon::now()->addDays(2),
+                'discount_end' => Carbon::now()->addDays(10),
             ],
             [
                 'name' => 'Croissant Coklat',
@@ -48,6 +61,10 @@ class ProductSeeder extends Seeder
                 'description' => 'Roti croissant isi coklat lumer',
                 'price' => 18000,
                 'image_url' => 'croissant.jpg',
+                'discount_type' => 1,
+                'discount_amount' => 2000,
+                'discount_start' => Carbon::now(),
+                'discount_end' => Carbon::now()->addWeek(),
             ],
             [
                 'name' => 'Kentang Goreng',
@@ -55,6 +72,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Kentang goreng renyah dan gurih',
                 'price' => 17000,
                 'image_url' => 'kentang-goreng.jpg',
+                'discount_type' => 0,
             ],
         ];
 

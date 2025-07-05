@@ -20,6 +20,10 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->string('image_url')->nullable();
             $table->tinyInteger('is_promoted')->default(0);
+            $table->integer('discount_amount')->default(0);
+            $table->tinyInteger('discount_type')->default(0); // 0: none, 1: fixed, 2: percent
+            $table->date('discount_start')->nullable();
+            $table->date('discount_end')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -29,13 +29,31 @@ class ProductController extends Controller
 
             $products = $query->with('reviews')->orderBy('created_at', 'desc')->get();
 
-            // Tambahkan average_rating manual ke setiap produk
-            $data = $products->map(function ($product) {
+            $now = now();
+
+            $data = $products->map(function ($product) use ($now) {
+                $finalPrice = $product->price;
+
+                if ($product->discount_type && $product->discount_start && $product->discount_end) {
+                    if ($now->between($product->discount_start, $product->discount_end)) {
+                        if ($product->discount_type == 1) {
+                            $finalPrice = max($product->price - $product->discount_amount, 0);
+                        } elseif ($product->discount_type == 2) {
+                            $finalPrice = max($product->price - ($product->price * $product->discount_amount / 100), 0);
+                        }
+                    }
+                }
+
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
                     'description' => $product->description,
                     'price' => $product->price,
+                    'final_price' => $finalPrice,
+                    'discount_type' => $product->discount_type,
+                    'discount_amount' => $product->discount_amount,
+                    'discount_start' => $product->discount_start,
+                    'discount_end' => $product->discount_end,
                     'stock' => $product->stock,
                     'image_url' => $product->image_url,
                     'is_promoted' => $product->is_promoted,
@@ -64,6 +82,19 @@ class ProductController extends Controller
         try {
             $product = Products::with(['category', 'reviews.user'])->findOrFail($id);
 
+            $now = now();
+            $finalPrice = $product->price;
+
+            if ($product->discount_type && $product->discount_start && $product->discount_end) {
+                if ($now->between($product->discount_start, $product->discount_end)) {
+                    if ($product->discount_type == 1) {
+                        $finalPrice = max($product->price - $product->discount_amount, 0);
+                    } elseif ($product->discount_type == 2) {
+                        $finalPrice = max($product->price - ($product->price * $product->discount_amount / 100), 0);
+                    }
+                }
+            }
+
             $averageRating = round($product->reviews->avg('rating'), 1);
             $reviewCount = $product->reviews->count();
 
@@ -74,6 +105,11 @@ class ProductController extends Controller
                     'name' => $product->name,
                     'description' => $product->description,
                     'price' => $product->price,
+                    'final_price' => $finalPrice,
+                    'discount_type' => $product->discount_type,
+                    'discount_amount' => $product->discount_amount,
+                    'discount_start' => $product->discount_start,
+                    'discount_end' => $product->discount_end,
                     'stock' => $product->stock,
                     'image_url' => $product->image_url,
                     'is_promoted' => $product->is_promoted,
@@ -100,6 +136,7 @@ class ProductController extends Controller
         }
     }
 
+
     public function store(Request $request)
     {
         try {
@@ -110,6 +147,10 @@ class ProductController extends Controller
                 'price'         => 'required|numeric',
                 'stock'         => 'required|integer|min:0',
                 'image_url'     => 'required|image|mimes:jpg,jpeg,png|max:2048',
+                'discount_amount' => 'nullable|numeric|min:0',
+                'discount_type' => 'nullable|integer|in:0,1,2',
+                'discount_start' => 'nullable|date',
+                'discount_end'   => 'nullable|date|after_or_equal:discount_start',
             ]);
 
             if ($request->hasFile('image_url')) {
@@ -128,6 +169,10 @@ class ProductController extends Controller
                 'description'           => $request->description,
                 'price'                 => $request->price,
                 'stock'                 => $request->stock,
+                'discount_amount'       => $request->discount_amount,
+                'discount_type'         => $request->discount_type,
+                'discount_start'        => $request->discount_start,
+                'discount_end'          => $request->discount_end,
                 'image_url'             => $imagePath,
             ]);
 
@@ -163,12 +208,16 @@ class ProductController extends Controller
             }
 
             $product->update([
-                'category_id'   => $request->category_id ?? $product->category_id,
-                'name'          => $request->name ?? $product->name,
-                'description'   => $request->description ?? $product->description,
-                'price'         => $request->price ?? $product->price,
-                'stock'         => $request->stock ?? $product->stock,
-                'image_url'     => $imagePath ?? null,
+                'category_id'           => $request->category_id ?? $product->category_id,
+                'name'                  => $request->name ?? $product->name,
+                'description'           => $request->description ?? $product->description,
+                'price'                 => $request->price ?? $product->price,
+                'stock'                 => $request->stock ?? $product->stock,
+                'discount_amount'       => $request->discount_amount ?? $product->discount_amount,
+                'discount_type'         => $request->discount_type ?? $product->discount_amount,
+                'discount_start'        => $request->discount_start ?? $product->discount_amount,
+                'discount_end'          => $request->discount_end ?? $product->discount_amount,
+                'image_url'             => $imagePath ?? null,
             ]);
 
             return response()->json([
