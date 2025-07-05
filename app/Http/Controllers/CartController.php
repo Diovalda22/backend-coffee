@@ -13,7 +13,18 @@ class CartController extends Controller
     public function index()
     {
         $carts = Carts::with('product')->where('user_id', Auth::id())->get();
-        return response()->json(['cart' => $carts]);
+        $cartWithDiscount = $carts->map(function ($item) {
+            $product = $item->product;
+            $discountedPrice = $product ? $product->getDiscountedPrice() : null;
+            $productArr = $product ? $product->toArray() : null;
+            if ($productArr) {
+                $productArr['discounted_price'] = $discountedPrice;
+            }
+            $itemArr = $item->toArray();
+            $itemArr['product'] = $productArr;
+            return $itemArr;
+        });
+        return response()->json(['cart' => $cartWithDiscount]);
     }
 
     public function store(Request $request)

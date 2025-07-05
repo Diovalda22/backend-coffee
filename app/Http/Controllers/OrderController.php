@@ -38,7 +38,8 @@ class OrderController extends Controller
 
         $totalPrice = 0;
         foreach ($cartItems as $item) {
-            $totalPrice += $item->product->price * $item->quantity;
+            $discountedPrice = $item->product->getDiscountedPrice();
+            $totalPrice += $discountedPrice * $item->quantity;
         }
 
         DB::beginTransaction();
@@ -51,11 +52,12 @@ class OrderController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
+                $discountedPrice = $item->product->getDiscountedPrice();
                 OrderDetails::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
+                    'price' => $discountedPrice,
                 ]);
             }
 
