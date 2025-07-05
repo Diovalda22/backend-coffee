@@ -120,6 +120,7 @@ class ProductController extends Controller
                         return [
                             'id' => $review->id,
                             'user' => $review->user->name,
+                            'user_id' => $review->user->id,
                             'rating' => $review->rating,
                             'review' => $review->review,
                             'created_at' => $review->created_at->toDateTimeString(),
