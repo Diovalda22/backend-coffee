@@ -9,7 +9,8 @@ class ProductReview extends Model
 {
     use SoftDeletes;
     protected $guarded = ['id'];
-    
+    protected $with = ['user'];
+
 
     public function user()
     {
