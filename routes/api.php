@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\MidtransCallbackController;
 // use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController as UserProductController;
 use App\Http\Controllers\ProductReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Routes
     Route::middleware('check-role:1')->prefix('user')->group(function () {
         // Produk
-        Route::get('/product', [ProductController::class, 'index']);
+        Route::get('/product/grouped', [UserProductController::class, 'groupedProducts']);
         Route::get('/product/{id}', [ProductController::class, 'show']);
 
         // Keranjang
