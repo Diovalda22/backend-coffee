@@ -209,17 +209,18 @@ class ProductController extends Controller
             }
 
             $product->update([
-                'category_id'           => $request->category_id ?? $product->category_id,
-                'name'                  => $request->name ?? $product->name,
-                'description'           => $request->description ?? $product->description,
-                'price'                 => $request->price ?? $product->price,
-                'stock'                 => $request->stock ?? $product->stock,
-                'discount_amount'       => $request->discount_amount ?? $product->discount_amount,
-                'discount_type'         => $request->discount_type ?? $product->discount_amount,
-                'discount_start'        => $request->discount_start ?? $product->discount_amount,
-                'discount_end'          => $request->discount_end ?? $product->discount_amount,
-                'image_url'             => $imagePath ?? null,
+                'category_id'     => $request->has('category_id') ? $request->category_id : $product->category_id,
+                'name'            => $request->has('name') ? $request->name : $product->name,
+                'description'     => $request->has('description') ? $request->description : $product->description,
+                'price'           => $request->has('price') ? $request->price : $product->price,
+                'stock'           => $request->has('stock') ? $request->stock : $product->stock,
+                'discount_amount' => $request->has('discount_amount') ? $request->discount_amount : $product->discount_amount,
+                'discount_type'   => $request->has('discount_type') ? $request->discount_type : $product->discount_type,
+                'discount_start'  => $request->has('discount_start') ? $request->discount_start : $product->discount_start,
+                'discount_end'    => $request->has('discount_end') ? $request->discount_end : $product->discount_end,
+                'image_url'       => $imagePath ?? null,
             ]);
+
 
             return response()->json([
                 'status' => 'success',
@@ -231,6 +232,7 @@ class ProductController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Gagal mengubah data produk.',
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }

@@ -28,6 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User Routes
     Route::middleware('check-role:1')->prefix('user')->group(function () {
+        // Profil
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
         // Produk
         Route::get('/product', [ProductController::class, 'index']);
         Route::get('/product/grouped', [UserProductController::class, 'groupedProducts']);
